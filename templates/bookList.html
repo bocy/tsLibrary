@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <li><a href="/borrowed_list/">我借的书</a></li>
+    <li class="active"><a href="/book_list/">我想借书</a></li>
+    <li><a href="/borrow_history/">借书历史</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="list" style="height: 600px">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>图书名字</th>
+                <th>图书类别</th>
+                <th>作者</th>
+                <th>借阅时间</th>
+                <th>借阅状态</th>
+                <th>借阅者</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.id }}</td>
+                    <td>{{ book.name }}</td>
+                    <td>{{ book.type }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.borrowed_time|date:"Y-m-d H:i:s" }}</td>
+                {% if book.is_borrowed %} <td>已借出</td>
+                {% else %} <td>未借出</td> {% endif %}
+                    <td>{{ book.borrower }}</td>
+                    <td>{% if not book.is_borrowed %}<button type="button" class="btn btn-sm btn-primary" onclick="borrow_book({{ book.id }})">借阅</button> {% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if books.has_previous %}
+            <li><a href="?page={{ books.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            {% endif %}
+
+            {% for pg in books.paginator.page_range %}
+                {% if books.number == pg %}
+                    <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if books.has_next %}
+                <li><a href="?page={{ books.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <script>
+    function borrow_book(book_id) {
+        $.ajax({
+            url: "/borrow_book/" + book_id,
+            async:false,
+            success: function () {
+                alert("借阅成功")
+                window.location.reload()
+            },
+            error: function () {
+                alert("借阅失败")
+            }
+        })
+    }
+    </script>
+
+{% endblock %}

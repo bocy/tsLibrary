@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <li class="active"><a href="/borrowed_list/">我借的书</a></li>
+    <li><a href="/book_list/">我想借书</a></li>
+    <li><a href="/borrow_history/">借书历史</a></li>
+{% endblock %}
+
+{% block content %}
+    <div style="height: 600px">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>图书名字</th>
+                <th>图书类别</th>
+                <th>作者</th>
+                <th>借阅时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for borrow_record in borrowed_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ borrow_record.book.name }}</td>
+                    <td>{{ borrow_record.book.type }}</td>
+                    <td>{{ borrow_record.book.author }}</td>
+                    <td>{{ borrow_record.borrow_time|date:"Y-m-d H:i:s" }}</td>
+                    <td><button type="button" class="btn btn-sm btn-primary" onclick="return_book({{ borrow_record.id }})">归还</button></td>
+{#                    <td><a id="returnBook" href="/return_book/{{ borrow_record.id }}">归还</a></td>#}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    function return_book(borrow_id) {
+        $.ajax({
+            url: "/return_book/"+borrow_id,
+            async:false,
+            success: function () {
+                alert("归还成功")
+                window.location.reload()
+            },
+            error: function () {
+                alert("归还失败")
+            }
+        })
+    }
+    </script>
+
+{% endblock %}

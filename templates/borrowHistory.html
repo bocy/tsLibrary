@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <li><a href="/borrowed_list/">我借的书</a></li>
+    <li><a href="/book_list/">我想借书</a></li>
+    <li class="active"><a href="/borrow_history/">借书历史</a></li>
+{% endblock %}
+
+{% block content %}
+    <div style="height: 600px">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>序号</th>
+                <th>图书名字</th>
+                <th>图书类别</th>
+                <th>作者</th>
+                <th>借阅时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for borrow_record in borrow_records %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ borrow_record.book.name }}</td>
+                    <td>{{ borrow_record.book.type }}</td>
+                    <td>{{ borrow_record.book.author }}</td>
+                    <td>{{ borrow_record.borrow_time|date:"Y-m-d H:i:s" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if borrow_records.has_previous %}
+            <li><a href="?page={{ borrow_records.previous_page_number }}" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+            {% endif %}
+
+            {% for pg in borrow_records.paginator.page_range %}
+                {% if borrow_records.number == pg %}
+                    <li class="active"><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ pg }}">{{ pg }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if borrow_records.has_next %}
+                <li><a href="?page={{ borrow_records.next_page_number }}" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+{% endblock %}
